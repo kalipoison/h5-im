@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<link href="../css/header.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<!--头部标题栏 -->
+		<header class="mui-bar mui-bar-nav title">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left title-color"></a>
+			<a id="link_submit_nichname" class="mui-icon mui-icon-right-nav mui-pull-right title-color" style="font-size:16px;line-height: 25px;">完成</a>
+			<h1 class="mui-title title-color" >设置昵称</h1>
+		</header>
+		<!-- 主体部分 -->
+		<div class="mui-content">
+			<div class="mui-input-row">
+				<input id="txt_nickname" type="text" class="mui-input-speech mui-input-clear" placeholder="修改昵称" />
+			</div>
+		</div>
+		
+		
+		
+		
+		<script src="../js/mui.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function () {
+			    //获取登录或注册后的全局用户对象
+				var user = app.getUserGlobalInfo();
+				//获取昵称
+				var mynickname = user.nickname;
+				//获取修改昵称的文本框对象
+				var txt_nickname = document.getElementById("txt_nickname");
+				//动态设置昵称文本框的value
+				txt_nickname.value = mynickname;
+				
+				//修改昵称
+				var link_submit_nichname = document.getElementById("link_submit_nichname");
+				link_submit_nichname.addEventListener("tap",function(){
+					//获取修改后的昵称
+					var newNickName = txt_nickname.value;
+					if(!app.isNotNull(newNickName)){
+						app.showToast("请输入修改后的昵称","error");
+						return false;
+					}
+					if(newNickName.length>10){
+						app.showToast("昵称长度不能超过10位","error");
+						return false;
+					}
+					plus.nativeUI.showWaiting("请稍后...");
+					//异步请求后台服务器
+					mui.ajax(app.serverUrl+"/user/setNickname",{
+						data:{
+							id:user.id,
+							nickname:newNickName
+						},
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){ //data = {"status":200,"msg":"OK","data":{"id":"IM03","username":"王航","password":"e10adc3949ba59abbe56e057f20f883e","faceImage":"","faceImageBig":"","nickname":"wanghang","qrcode":"sddsds","cid":null},"ok":null}
+							console.info(JSON.stringify(data));
+							plus.nativeUI.closeWaiting();
+							
+							if(data.status==200){//若服务器中成功返回了非空的数据,则表明了账户与密码验证已经成功
+								//登录或者注册成功之后，保存全局用户对象到本地缓存
+								var userinfoJSON = data.data;
+								console.log(userinfoJSON);
+								app.setUserGlobalInfo(userinfoJSON);
+								
+								//触发另外一个webview的自定义事件，更新最新用户信息
+								var mywebview = plus.webview.getWebviewById("im-me.html");
+								mui.fire(mywebview,"refresh");
+								//页面跳转
+								mui.back();
+							}else{//服务器返回的数据为空,表明账户与密码验证失败
+									app.showToast(data.msg,"error");
+							}
+						},
+						error:function(XMLHttpRequest, textStatus, errorThrown){
+							if(textStatus=="timeout"){
+								mui.toast("连接超时");//超过十秒报错
+							}else if(textStatus=="error"){
+								mui.toast("连接出错");
+							}
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>

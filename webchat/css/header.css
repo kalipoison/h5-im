@@ -1,0 +1,13 @@
+.title{
+	background-color: #6D6D72;
+}
+.title-color{
+	color:white;
+}
+
+.mui-bar-tab .mui-tab-item .mui-active{
+	color:#6D6D72;
+}
+.font-style{
+	line-height: 42px;
+}

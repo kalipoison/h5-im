@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<link href="../css/header.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<!--头部标题栏 -->
+		<header class="mui-bar mui-bar-nav title">
+			<h1 class="mui-title title-color"> 发现 </h1>
+		</header>
+		<!-- 主体部分 -->
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell mui-media">
+					<a href="javascript:;">
+						<img class="mui-media-object mui-pull-left" src="../images/friends.png" style="max-width: 25px;height: 25px;">
+							<p class="mui-ellipsis" style="line-height: 24px;color:#000000;font-size: 14px;">
+								<span style="margin-left: 10px;">朋友圈</span>
+							</p>
+					</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view" style="margin-top: 10px;">
+				<li id="li_add_friends" class="mui-table-view-cell mui-media">
+					<a href="javascript:;">
+						<img class="mui-media-object mui-pull-left" src="../images/addfriends.png" style="max-width: 25px;height: 25px;">
+						<p class="mui-ellipsis" style="line-height: 24px;color:#000000;font-size: 14px;">
+							<span style="margin-left: 10px;">添加好友</span>
+						</p>
+					</a>
+				</li>
+				<li id="li_scanme" class="mui-table-view-cell mui-media">
+					<a href="javascript:;">
+						<img class="mui-media-object mui-pull-left" src="../images/scanscan.png" style="max-width: 25px;height: 25px;">
+						<p class="mui-ellipsis" style="line-height: 24px;color:#000000;font-size: 14px;">
+							<span style="margin-left: 10px;">扫一扫</span>
+						</p>
+					</a>
+				</li>
+				
+			</ul>
+		</div>
+		
+		
+		
+		
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function () {
+			    //添加好友监听事件
+				var li_add_friends = document.getElementById("li_add_friends");
+				li_add_friends.addEventListener("tap",function(){
+					mui.openWindow("searchFriends.html","searchFriends.html");
+				});
+				
+				//扫一扫添加好友
+				var li_scanme = document.getElementById("li_scanme");
+				li_scanme.addEventListener("tap",function(){
+					mui.openWindow("scanme.html","scanme.html");
+				});
+			});
+		</script>
+	</body>
+
+</html>

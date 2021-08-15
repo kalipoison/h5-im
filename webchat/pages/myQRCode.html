@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<link href="../css/header.css" rel="stylesheet" />
+		<style type="text/css">
+			#mui-content{
+				width: 100%;
+				position: absolute;
+				top:44px;
+				padding:80px 30px 0px 30px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--头部标题栏 -->
+		<header class="mui-bar mui-bar-nav title">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left title-color"></a>
+			<a id="link_download_qrcode" class="mui-pull-right title-color" style="font-size:16px;line-height:44px;">
+				<img src="../images/download.png" width="20px" />
+			</a>
+			<h1 class="mui-title title-color"><b>我的二维码</b></h1>
+		</header>
+		<!-- 主体部分 -->
+		<div id="mui-content">
+			<div style="background-color: white;padding-top: 20px;padding-left: 20px;">
+				<img id="img_myface" src="../images/face-cat.jpg" width="60" style="border-radius: 8%;float: left;" />
+				<label id="lab_nickname" style="float: left;margin-left: 10px;margin-top: 10px;">飞凡</label>
+			</div>
+			<div  style="background-color: white;text-align: center; ">
+				<img id="img_my_qrcode" src="" width="80%" style="padding: 20px 0px;" />
+			</div>
+			<div style="background-color: white;text-align: center;">
+				<p style="padding-bottom: 10px;font-size: 12px;">扫一扫上面的二维码，加我聊天</p>
+			</div>
+		</div>
+		
+		
+		
+		
+		<script src="../js/mui.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function () {
+			    //获取全局用户对象
+				var user = app.getUserGlobalInfo();
+				var qrcode = user.qrcode;
+				var userface = user.faceImage;
+				var nickename = user.nickname;
+				
+				//获取需要动态展示内容的组件对象
+				var img_my_qrcode = document.getElementById("img_my_qrcode");
+				if(app.isNotNull(qrcode)){
+					console.log(app.imgServerUrl+qrcode);
+					img_my_qrcode.src=app.imgServerUrl+qrcode;
+					console.log(img_my_qrcode.src);
+				}
+				
+				var img_myface = document.getElementById("img_myface");
+				if(app.isNotNull(userface)){
+					img_myface.src=app.imgServerUrl+userface;
+				}
+				
+				
+				var lab_nickname = document.getElementById("lab_nickname");
+				if(app.isNotNull(nickename)){
+					lab_nickname.innerHTML = nickename;
+				}
+				
+				//获取手机端可见屏幕的宽度
+				var imgWidth = document.body.clientWidth-60;
+				img_my_qrcode.width=imgWidth;
+				img_my_qrcode.height = imgWidth;
+				
+				
+				
+				//保存二维码
+				var link_download_qrcode = document.getElementById("link_download_qrcode");
+				link_download_qrcode.addEventListener("tap", function(){
+					
+					plus.nativeUI.showWaiting( "下载中..." );
+				
+					var dtask = plus.downloader.createDownload(
+						app.imgServerUrl + qrcode, 
+						{},
+						function(d, status) {
+							// 下载完成
+							if(status == 200) {
+								plus.nativeUI.closeWaiting();
+								console.log("Download success: " + d.filename);
+						
+								plus.gallery.save( d.filename, function () {
+									app.showToast( "保存图片到相册成功", "success" );
+								});
+						
+							} else {
+								plus.nativeUI.closeWaiting();
+								console.log("Download failed: " + status);
+							}
+						});
+					dtask.start();
+				});
+			});
+		</script>
+	</body>
+
+</html>

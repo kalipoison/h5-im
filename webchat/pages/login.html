@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="../js/mui.min.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="../css/registLogin/util.css">
+		<link rel="stylesheet" type="text/css" href="../css/registLogin/main.css">
+
+		
+
+		<style>
+			.p-t-85 {
+				padding-top: 10px;
+			}
+			
+			.p-b-70 {
+				padding-bottom: 35px;
+			}
+			
+			.m-t-85 {
+				margin-top: 15px;
+			}
+			
+			.container-login100 {
+				padding: 25px;
+			}
+			/*toast信息提示*/
+			
+			.mui-toast-container {
+				bottom: 50% !important;
+			}
+			.mui-toast-message {
+				opacity: 0.6;
+				color: #fff;
+				width: 180px;
+				padding: 70px 5px 10px 5px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			<div class="container-login100">
+				<div class="wrap-login100 p-t-85 p-b-20">
+					<form id="userform">
+						<span class="login100-form-title p-b-70">
+							<h5> IM 聊 天</h5>
+						</span>
+						<span class="login100-form-avatar">
+							<img id="img_login_face" src="../css/registLogin/arrow.jpg" alt="gary">
+						</span>
+
+						<div class="wrap-input100 validate-input m-t-85 m-b-35">
+							<input class="input100" type="text" id="username" name="username" placeholder="用户名">
+							<span class="focus-input100"></span>
+						</div>
+
+						<div class="wrap-input100 validate-input m-b-50">
+							<input class="input100" type="password" id="password" name="password" placeholder="密码">
+							<span class="focus-input100"></span>
+						</div>
+						<div class="container-login100-form-btn" >
+							<button type="submit"  class="login100-form-btn" style="background-color: #FF4136;">
+								登录/注册
+							</button>
+						</div>
+					</form>
+					
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="../js/app.js" ></script>
+		<script type="text/javascript" charset="utf-8">
+			mui.init();
+			mui.plusReady(function () {
+				// 判断用户是否注册登录过，如果本地内存有全局的用户对象，此时直接跳转到首页
+				var userInfo = app.getUserGlobalInfo();
+				if (userInfo != null) {
+					// 页面跳转
+					mui.openWindow("index.html", "index.html");
+				}
+				
+			    var userform = document.getElementById("userform");//获取表单对象
+				var username = document.getElementById("username");//用户名
+				var password = document.getElementById("password");//密码
+				
+				userform.addEventListener("submit",function(e){
+					// 判断用户名是否为空，如果为空则让其获得焦点
+					if (!app.isNotNull(username.value)) {
+						app.showToast("请输入用户名","error");
+						// 获取焦点
+						username.focus();
+					} else if (!app.isNotNull(password.value)) {
+						app.showToast("请输入密码","error");
+						// 获取焦点
+						password.focus();
+					} else {
+						// 判断用户名和密码的长度，进行限制
+						if (username.value.length > 12) {
+							app.showToast("用户名不能超过12位", "error");
+							return false;
+						} else if (password.value.length > 6) {
+							app.showToast("密码不能超过6位", "error");
+							return false;
+						}
+						//获取每台设备上的唯一cid
+						var cid = plus.push.getClientInfo().clientid;
+						mui.ajax(app.serverUrl+'/user/registerOrLogin',{//使用之前所存入的ip来进行通信
+							data:{
+								username: username.value,
+								password: password.value,
+								cid:cid
+							},
+							type:'post',//HTTP请求类型
+							timeout:10000,//超时时间设置为10秒；
+							success:function(data){ //data = {"status":200,"msg":"OK","data":{"id":"IM03","username":"王航","password":"e10adc3949ba59abbe56e057f20f883e","faceImage":"","faceImageBig":"","nickname":"wanghang","qrcode":"sddsds","cid":null},"ok":null}
+								if(data.status==200){//若服务器中成功返回了非空的数据,则表明了账户与密码验证已经成功
+									var userInfo = data.data;//获取json对象中的用户对象
+									app.setUserGlobalInfo(userInfo);
+									mui.openWindow({url:'index.html',id:'index'});
+								}else{//服务器返回的数据为空,表明账户与密码验证失败
+									app.showToast(data.msg,"error");//弹出错误信息
+								}
+							},
+							error:function(XMLHttpRequest, textStatus, errorThrown){
+								mui(".mui-btn-green").button('reset');//取消loading效果
+								if(textStatus=="timeout"){
+									mui.toast("连接超时");//超过十秒报错
+								}else if(textStatus=="error"){
+									mui.toast("连接出错");
+								}
+							}
+						});
+					}
+					//防止默认时间，防止默认表单提交
+					e.preventDefault();
+				});
+			});
+		</script>
+
+	</body>
+
+</html>

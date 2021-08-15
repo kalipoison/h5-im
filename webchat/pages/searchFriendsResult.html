@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<link href="../css/header.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<!-- 头部 -->
+		<header class="mui-bar mui-bar-nav title">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" style="color:white;"></a>
+			<a id="link_submit_search" class="mui-icon mui-icon-right-nav mui-pull-right" style="color:white;font-size:14px;line-height:25px;">搜索</a>
+			<h1 class="mui-title title-color">详细资料</h1>
+		</header>
+	    <div class="mui-content">
+	    	<ul class="mui-table-view">
+	    		<li class="mui-table-view-cell mui-media">
+	    			<a href="javascript:;">
+	    				<img id="img_friend_face" class="mui-media-object mui-pull-left" src="" style="border-radius: 5%; line-height: 50px;max-width: 50px;height: 50px;">
+	    				<div class="mui-media-body">
+	    					<label id="lab_friend_nickname"></label>
+	    					<p id="p_friend_username" class="mui-ellipsis"></p>
+	    				</div>
+	    			</a>
+	    		</li>
+	    	</ul>
+			<br />
+			<div style="text-align: center;">
+				<button id="btn_add_friend" type="button" class="mui-btn mui-btn-block" style=" background-color: #FF4136;color: white;width: 95%;display: inline;padding: 8px 0;">添加好友</button>
+			</div>
+	    </div>
+		
+		<script src="../js/mui.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function () {
+			    //获取登录用户的全局信息
+				var user = app.getUserGlobalInfo();
+				//获取上一个页面传入的对象，并且对本页面相应的dom赋值初始化
+				var currentWebview = plus.webview.currentWebview();
+				//获取传递参数
+				var friend = currentWebview.friend;
+				console.log(friend);
+				
+				//获取头像对象
+				var img_friend_face = document.getElementById("img_friend_face");
+				var lab_friend_nickname = document.getElementById("lab_friend_nickname");
+				var p_friend_username = document.getElementById("p_friend_username");
+				
+				img_friend_face.src= app.imgServerUrl+friend.faceImage;
+				lab_friend_nickname.innerHTML=friend.nickname;
+				p_friend_username.innerHTML="帐号："+friend.username;
+				
+				//发送添加好友请求
+				var btn_add_friend = document.getElementById("btn_add_friend");
+				btn_add_friend.addEventListener("tap",function(){
+					plus.nativeUI.showWaiting("请稍后");
+					mui.ajax(app.serverUrl + "/user/addFriendRequest?myUserId="+user.id+"&friendUserName="+friend.username,{
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(data){
+							// 关闭等待框
+							plus.nativeUI.closeWaiting();
+							if (data.status == 200) {
+								app.showToast("好友请求已发送","success");
+								mui.openWindow({
+									url:"index.html",
+									id:"index"
+								});
+							} else {
+								app.showToast(data.msg, "error");
+							}
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>

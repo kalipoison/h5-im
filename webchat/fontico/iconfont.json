@@ -1,0 +1,37 @@
+{
+  "id": "2736090",
+  "name": "im1",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "568990",
+      "name": "通讯录",
+      "font_class": "tongxunlu",
+      "unicode": "e655",
+      "unicode_decimal": 58965
+    },
+    {
+      "icon_id": "1330725",
+      "name": "发现",
+      "font_class": "faxian",
+      "unicode": "e746",
+      "unicode_decimal": 59206
+    },
+    {
+      "icon_id": "1418235",
+      "name": "我",
+      "font_class": "wo",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "3095146",
+      "name": "消息",
+      "font_class": "xiaoxi",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    }
+  ]
+}

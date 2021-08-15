@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/header.css" rel="stylesheet" />
+		<link href="../fontico/iconfont.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<!--标题栏-->
+		<header class="mui-bar mui-bar-nav title">
+			<h1 class="mui-title title-color" id="im-title"><b>IM 聊 天</b></h1>
+		</header>
+		<!--主体部分-->
+		<div class="mui-content">
+		   
+		</div>
+		<!-- 底部选项卡 -->
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" tabindex="0">
+				<span class="mui-icon iconfont icon-xiaoxi"></span>
+				<span class="mui-tab-label">消息</span>
+			</a>
+			<a class="mui-tab-item" tabindex="1">
+				<span class="mui-icon iconfont icon-tongxunlu"></span>
+				<span class="mui-tab-label">通讯录</span>
+			</a>
+			<a class="mui-tab-item" tabindex="2">
+				<span class="mui-icon iconfont icon-faxian"></span>
+				<span class="mui-tab-label">发现</span>
+			</a>
+			<a class="mui-tab-item" tabindex="3">
+				<span class="mui-icon mui-icon-person"></span>
+				<span class="mui-tab-label">我</span>
+			</a>
+		</nav>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			//定义用于存储选项卡页面的数组
+			var subPages = [
+				{
+					pageId: "im-chatlist.html",
+					pageUrl: "im-chatlist.html"
+				},
+				{
+					pageId: "im-contact.html",
+					pageUrl: "im-contact.html"
+				},
+				{
+					pageId: "im-discover.html",
+					pageUrl: "im-discover.html"
+				},
+				{
+					pageId:"im-me.html",
+					pageUrl:"im-me.html"
+				}
+			];
+			//设置页面打开的样式
+			var pageStyle = {
+				top:"0px",
+				bottom:"50px"
+			};
+			
+			
+			mui.plusReady(function () {
+				// 禁止返回到登录注册页面
+				mui.back = function() {
+					return false;
+				}
+				//对网络连接进行事件监听
+				netChangeSwitch();
+				
+				//设置系统字体颜色
+				plus.navigator.setStatusBarStyle("light");
+			    //设置系统状态栏背景颜色
+				plus.navigator.setStatusBarBackground("#6D6D72");
+				
+				
+				//选项卡代码
+				//获取当前的webview对象
+				var indexWebview = plus.webview.currentWebview();
+				//将数组中的页面循环向当前主页webview 追加子页的4个webview对象
+				for(var i =0;i<subPages.length;i++){
+					//将每次循环产生的页面信息创建为webview窗口对象
+					var wv = plus.webview.create(subPages[i].pageUrl,subPages[i].pageId,pageStyle);
+					//隐藏
+					wv.hide();
+					//追加子窗口对象至主窗口对象中
+					indexWebview.append(wv);
+				}
+				//设置默认窗口页面
+				plus.webview.show(subPages[0].pageId);
+				//批量绑定tab事件
+				mui(".mui-bar-tab").on("tap","a",function(){
+					var tabindex = this.getAttribute("tabindex");
+					//显示点击的tab选项卡所对应的页面
+					plus.webview.show(subPages[tabindex].pageId,"fade-in",200);
+					//隐藏不需要的页面
+					for(var i=0;i<subPages.length;i++){
+						if(i!=tabindex){
+							plus.webview.hide(subPages[i].pageId,"fade-out",200);
+						}
+					}
+				});
+				//延时加载
+				setTimeout("initData()",1000);
+			});
+			//预加载
+			function initData(){
+				var bird_chatlist  = plus.webview.getWebviewById("bird-chatlist.html");
+				mui.fire(bird_chatlist,"refresh");
+				
+				var bird_me = plus.webview.getWebviewById("bird-me.html");
+				mui.fire(bird_me,"refresh");	
+			}
+			
+			//监听网络状态的函数
+			function netChangeSwitch(){
+				document.addEventListener("netchange",function(){
+					//获取网络状态
+					var connectionStatus = plus.networkinfo.getCurrentType();
+					if(connectionStatus!=0 && connectionStatus!=1){
+						var bird_title = document.getElementById("im-title");
+						bird_title.innerHTML = "<b>IM 聊 天</b>";
+					}else{
+						//网络异常
+						var bird_title = document.getElementById("im-title");
+						bird_title.innerHTML = "<b>IM 聊 天（未连接）</b>";
+					}
+				});	
+			}
+			
+
+		</script>
+	</body>
+
+</html>
